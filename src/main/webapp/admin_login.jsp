@@ -52,12 +52,7 @@
       </button>
     </form>
 
-    <div class="text-center mt-4">
-      <div class="alert alert-info rounded-3 py-2 small">
-        <i class="fa-solid fa-circle-info me-2"></i>
-        Default: <strong>admin@careplus.com</strong> / <strong>admin123</strong>
-      </div>
-    </div>
+    
     <div class="text-center mt-2">
       <a href="index.jsp" style="color:#888;font-size:.85rem;"><i class="fa-solid fa-arrow-left me-1"></i>Back to Home</a>
     </div>

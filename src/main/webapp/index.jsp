@@ -10,7 +10,6 @@
   <title>Care+ | Advanced Hospital Management</title>
   <%@include file="component/allcss.jsp"%>
   <style>
-    /* Hero */
     .hero-section {
       background: linear-gradient(135deg,#0f3460 0%,#019ADE 60%,#00d4aa 100%);
       min-height: 88vh; display:flex; align-items:center; position:relative; overflow:hidden;
@@ -31,27 +30,19 @@
     .stat-pill { background:rgba(255,255,255,0.15); border-radius:12px; padding:14px 20px; text-align:center; backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.2); }
     .stat-pill h3 { color:#fff; font-weight:800; margin:0; font-size:1.8rem; }
     .stat-pill p  { color:rgba(255,255,255,0.75); margin:0; font-size:.85rem; }
-    /* Search bar */
     .search-bar { background:#fff; border-radius:20px; padding:8px 8px 8px 24px; box-shadow:0 8px 40px rgba(0,0,0,0.15); display:flex; align-items:center; gap:12px; }
     .search-bar input { border:none; outline:none; flex:1; font-size:1rem; font-family:'Poppins',sans-serif; }
-    /* Feature cards */
     .feature-icon { width:60px;height:60px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-bottom:16px; }
-    /* Doctor card */
     .doctor-card { border-radius:20px; overflow:hidden; }
     .doctor-avatar { width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#019ADE,#00d4aa);display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;margin:0 auto 12px; }
-    /* AI chatbot */
-    #chatWidget { position:fixed; bottom:28px; right:28px; z-index:9999; }
-    #chatBtn { width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#019ADE,#00d4aa);border:none;color:#fff;font-size:1.4rem;box-shadow:0 6px 20px rgba(1,154,222,0.45);cursor:pointer;transition:all .3s; }
-    #chatBtn:hover { transform:scale(1.1); }
-    #chatBox { display:none; width:360px; background:#fff; border-radius:20px; box-shadow:0 20px 60px rgba(0,0,0,0.2); overflow:hidden; margin-bottom:12px; animation: fadeInUp .3s; }
-    @keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-    #chatMessages { height:320px; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
-    .msg-bot { background:#f0f8ff; border-radius:14px 14px 14px 4px; padding:10px 14px; max-width:85%; font-size:.88rem; }
-    .msg-user { background:linear-gradient(135deg,#019ADE,#00d4aa); color:#fff; border-radius:14px 14px 4px 14px; padding:10px 14px; max-width:85%; margin-left:auto; font-size:.88rem; }
-    .typing-dots span { display:inline-block; width:8px;height:8px;border-radius:50%;background:#019ADE;animation:bounce .8s infinite; margin:0 2px; }
-    .typing-dots span:nth-child(2){animation-delay:.2s}
-    .typing-dots span:nth-child(3){animation-delay:.4s}
-    @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+
+    /* Chatbot */
+    #chatWidget { position:fixed; bottom:24px; right:24px; z-index:9999; }
+    #chatBox { width:340px; background:#fff; border-radius:20px; box-shadow:0 16px 48px rgba(0,0,0,0.18); overflow:hidden; margin-bottom:10px; display:none; flex-direction:column; }
+    @keyframes dotBounce {
+      0%,60%,100% { transform:translateY(0); }
+      30%          { transform:translateY(-7px); }
+    }
   </style>
 </head>
 <body>
@@ -72,15 +63,11 @@
         <p class="hero-sub mt-3 mb-4 animate__animated animate__fadeInLeft" style="animation-delay:.2s;">
           Experience next-generation healthcare with smart appointment booking, AI health assistant, and real-time doctor availability.
         </p>
-        <!-- Quick Search -->
         <div class="search-bar mb-4 animate__animated animate__fadeInUp" style="animation-delay:.3s;">
           <i class="fa-solid fa-magnifying-glass" style="color:#019ADE;"></i>
           <input type="text" id="specialistSearch" placeholder="Search specialist, disease, doctor..." oninput="filterDoctors(this.value)">
-          <a href="user_appointment.jsp" class="btn-primary-custom btn" style="border-radius:12px;padding:10px 22px;">
-            Book Now
-          </a>
+          <a href="user_appointment.jsp" class="btn-primary-custom btn" style="border-radius:12px;padding:10px 22px;">Book Now</a>
         </div>
-        <!-- Stats -->
         <div class="row g-3 animate__animated animate__fadeInUp" style="animation-delay:.4s;">
           <%
             DoctorDao heroDao = new DoctorDao(DBConnection.getConnection());
@@ -112,7 +99,6 @@
               <i class="fa-solid fa-hospital-user" style="font-size:8rem;color:rgba(255,255,255,0.8);"></i>
             </div>
           </div>
-          <!-- Floating cards -->
           <div style="position:absolute;top:20px;left:-20px;background:#fff;border-radius:14px;padding:12px 18px;box-shadow:0 8px 24px rgba(0,0,0,0.12);">
             <div class="d-flex align-items-center gap-2">
               <div style="width:36px;height:36px;background:#e8f6fd;border-radius:10px;display:flex;align-items:center;justify-content:center;">
@@ -285,46 +271,75 @@
 
 <!-- AI CHATBOT WIDGET -->
 <div id="chatWidget">
+
   <div id="chatBox">
-    <div style="background:linear-gradient(135deg,#019ADE,#00d4aa);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#019ADE,#00d4aa);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;">
       <div class="d-flex align-items-center gap-2">
-        <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;">
-          <i class="fa-solid fa-robot text-white"></i>
+        <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fa-solid fa-robot" style="color:#fff;font-size:1rem;"></i>
         </div>
         <div>
-          <div style="color:#fff;font-weight:700;font-size:.95rem;">Care+ AI Assistant</div>
-          <div style="color:rgba(255,255,255,0.8);font-size:.75rem;"><span style="width:8px;height:8px;background:#4caf50;border-radius:50%;display:inline-block;margin-right:4px;"></span>Online</div>
+          <div style="color:#fff;font-weight:700;font-size:.9rem;line-height:1.2;">Care+ AI Assistant</div>
+          <div style="color:rgba(255,255,255,0.85);font-size:.72rem;">
+            <span style="display:inline-block;width:7px;height:7px;background:#4caf50;border-radius:50%;margin-right:4px;"></span>Online
+          </div>
         </div>
       </div>
-      <button onclick="toggleChat()" style="background:none;border:none;color:#fff;font-size:1.1rem;cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div id="chatMessages">
-      <div class="msg-bot">👋 Hi! I'm Care+ AI Assistant. I can help you with:<br>• Symptom information<br>• Finding specialists<br>• Appointment guidance<br>• Health tips<br><br>What can I help you with today?</div>
-    </div>
-    <div style="padding:12px;border-top:1px solid #eee;display:flex;gap:8px;">
-      <input type="text" id="chatInput" class="form-control rounded-pill" placeholder="Ask me anything..." style="font-size:.88rem;" onkeypress="if(event.key==='Enter')sendChat()">
-      <button onclick="sendChat()" style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#019ADE,#00d4aa);border:none;color:#fff;flex-shrink:0;">
-        <i class="fa-solid fa-paper-plane"></i>
+      <button onclick="toggleChat()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem;display:flex;align-items:center;justify-content:center;">
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
-    <div style="padding:4px 12px 10px;display:flex;gap:6px;flex-wrap:wrap;">
-      <button onclick="quickMsg('What are the symptoms of diabetes?')" style="background:#f0f8ff;border:1px solid #cce9f9;border-radius:20px;padding:4px 12px;font-size:.75rem;cursor:pointer;color:#019ADE;">Diabetes symptoms</button>
-      <button onclick="quickMsg('I have a headache, what should I do?')" style="background:#f0f8ff;border:1px solid #cce9f9;border-radius:20px;padding:4px 12px;font-size:.75rem;cursor:pointer;color:#019ADE;">Headache help</button>
-      <button onclick="quickMsg('How do I book an appointment?')" style="background:#f0f8ff;border:1px solid #cce9f9;border-radius:20px;padding:4px 12px;font-size:.75rem;cursor:pointer;color:#019ADE;">Book appointment</button>
+
+    <!-- Messages -->
+    <div id="chatMessages" style="height:300px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#fafcff;"></div>
+
+    <!-- Input -->
+    <div style="padding:10px 12px;border-top:1px solid #eee;background:#fff;display:flex;gap:8px;align-items:center;">
+      <input type="text" id="chatInput" autocomplete="off"
+             placeholder="Ask me anything..."
+             style="flex:1;border:1.5px solid #e0eefa;border-radius:20px;padding:9px 14px;font-size:.85rem;font-family:'Poppins',sans-serif;outline:none;"
+             onfocus="this.style.borderColor='#019ADE'" onblur="this.style.borderColor='#e0eefa'">
+      <button onclick="sendChat()"
+              style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#019ADE,#00d4aa);border:none;color:#fff;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <i class="fa-solid fa-paper-plane" style="font-size:.8rem;"></i>
+      </button>
+    </div>
+
+    <!-- Quick chips -->
+    <div style="padding:6px 12px 10px;background:#fff;display:flex;gap:6px;flex-wrap:wrap;">
+      <button onclick="quickMsg('diabetes symptoms')" style="background:#f0f8ff;border:1px solid #cce9f9;border-radius:20px;padding:4px 11px;font-size:.75rem;cursor:pointer;color:#019ADE;font-family:'Poppins',sans-serif;">Diabetes</button>
+      <button onclick="quickMsg('I have headache')" style="background:#f0f8ff;border:1px solid #cce9f9;border-radius:20px;padding:4px 11px;font-size:.75rem;cursor:pointer;color:#019ADE;font-family:'Poppins',sans-serif;">Headache</button>
+      <button onclick="quickMsg('how to book appointment')" style="background:#f0f8ff;border:1px solid #cce9f9;border-radius:20px;padding:4px 11px;font-size:.75rem;cursor:pointer;color:#019ADE;font-family:'Poppins',sans-serif;">Book appointment</button>
+      <button onclick="quickMsg('fever treatment')" style="background:#f0f8ff;border:1px solid #cce9f9;border-radius:20px;padding:4px 11px;font-size:.75rem;cursor:pointer;color:#019ADE;font-family:'Poppins',sans-serif;">Fever</button>
     </div>
   </div>
+
+  <!-- Floating button -->
   <div style="text-align:right;">
-    <button id="chatBtn" onclick="toggleChat()" title="Chat with AI Assistant">
+    <button onclick="toggleChat()" title="Chat with AI Assistant"
+            style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#019ADE,#00d4aa);border:none;color:#fff;font-size:1.3rem;box-shadow:0 6px 20px rgba(1,154,222,0.45);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:auto;">
       <i class="fa-solid fa-robot"></i>
     </button>
-    <div style="font-size:.7rem;color:#666;margin-top:4px;">AI Assistant</div>
+    <div style="font-size:.68rem;color:#888;margin-top:3px;text-align:center;">AI Assistant</div>
   </div>
-</div>
+
+</div><!-- end #chatWidget -->
 
 <script>
+var chatOpen = false;
+
 function toggleChat() {
-  const box = document.getElementById('chatBox');
-  box.style.display = box.style.display === 'none' || box.style.display === '' ? 'block' : 'none';
+  chatOpen = !chatOpen;
+  var box = document.getElementById('chatBox');
+  box.style.display = chatOpen ? 'flex' : 'none';
+  if (chatOpen) {
+    var msgs = document.getElementById('chatMessages');
+    if (msgs.children.length === 0) {
+      appendBot("👋 Hi! I'm <strong>Care+ AI Assistant</strong>.<br>I can help you with:<br>• Symptom information<br>• Finding the right specialist<br>• Appointment booking guidance<br>• General health tips<br><br>What can I help you with today?");
+    }
+    setTimeout(function(){ document.getElementById('chatInput').focus(); }, 100);
+  }
 }
 
 function quickMsg(text) {
@@ -332,39 +347,103 @@ function quickMsg(text) {
   sendChat();
 }
 
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const msg = input.value.trim();
+function sendChat() {
+  var input = document.getElementById('chatInput');
+  var msg   = input.value.trim();
   if (!msg) return;
   input.value = '';
+  appendUser(msg);
+  var typingId = 'typing_' + Date.now();
+  appendTyping(typingId);
+  setTimeout(function() {
+    removeTyping(typingId);
+    appendBot(getReply(msg.toLowerCase()));
+  }, 700);
+}
 
-  const msgs = document.getElementById('chatMessages');
-  msgs.innerHTML += `<div class="msg-user">${msg}</div>`;
-  msgs.innerHTML += `<div class="msg-bot typing-dots" id="typing"><span></span><span></span><span></span></div>`;
-  msgs.scrollTop = msgs.scrollHeight;
-
-  try {
-    const res = await fetch('/care_plus/AIChatServlet', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({message: msg})
-    });
-    const data = await res.json();
-    document.getElementById('typing').remove();
-    msgs.innerHTML += `<div class="msg-bot">${data.reply}</div>`;
-  } catch(e) {
-    document.getElementById('typing').remove();
-    msgs.innerHTML += `<div class="msg-bot">I'm here to help! For immediate assistance, please <a href="user_appointment.jsp">book an appointment</a> with our doctors.</div>`;
-  }
+function appendUser(text) {
+  var div = document.createElement('div');
+  div.style.cssText = 'background:linear-gradient(135deg,#019ADE,#00d4aa);color:#fff;border-radius:14px 14px 4px 14px;padding:10px 14px;max-width:80%;font-size:.85rem;margin-left:auto;line-height:1.5;word-break:break-word;';
+  div.textContent = text;
+  var msgs = document.getElementById('chatMessages');
+  msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
 
+function appendBot(html) {
+  var div = document.createElement('div');
+  div.style.cssText = 'background:#fff;border:1px solid #e0eefa;border-radius:14px 14px 14px 4px;padding:10px 14px;max-width:85%;font-size:.85rem;line-height:1.6;color:#222;word-break:break-word;box-shadow:0 1px 4px rgba(1,154,222,.08);';
+  div.innerHTML = html;
+  var msgs = document.getElementById('chatMessages');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function appendTyping(id) {
+  var div = document.createElement('div');
+  div.id = id;
+  div.style.cssText = 'background:#fff;border:1px solid #e0eefa;border-radius:14px 14px 14px 4px;padding:10px 14px;max-width:60px;display:flex;gap:4px;align-items:center;';
+  for (var i = 0; i < 3; i++) {
+    var dot = document.createElement('span');
+    dot.style.cssText = 'width:7px;height:7px;border-radius:50%;background:#019ADE;display:inline-block;animation:dotBounce .8s infinite;animation-delay:' + (i*0.2) + 's;';
+    div.appendChild(dot);
+  }
+  var msgs = document.getElementById('chatMessages');
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping(id) {
+  var el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function getReply(msg) {
+  if (/^(hi|hello|hey|namaste|hii|good morning|good evening)/.test(msg))
+    return "👋 Hello! Welcome to <strong>Care+ AI Assistant</strong>!<br><br>I can help you with symptoms, finding doctors, or booking appointments. What would you like to know?";
+  if (msg.includes('book') || msg.includes('appointment') || msg.includes('schedule') || msg.includes('slot'))
+    return "📅 <strong>How to book an appointment:</strong><br>1. Click <strong>Login</strong> on the navbar<br>2. Go to <strong>Book Appointment</strong><br>3. Select specialist &amp; doctor<br>4. Pick date &amp; time<br><br>👉 <a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('diabet') || msg.includes('blood sugar') || msg.includes('sugar level'))
+    return "🩺 <strong>Diabetes Symptoms:</strong><br>• Frequent urination<br>• Excessive thirst<br>• Unexplained weight loss<br>• Blurred vision<br>• Fatigue<br><br>👉 Consult our <strong>Endocrinologist</strong>. <a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('fever') || msg.includes('temperature') || msg.includes('chills'))
+    return "🌡️ <strong>For Fever:</strong><br>• Rest and stay hydrated<br>• Paracetamol if temp &gt; 38°C<br>• Wet cloth on forehead<br><br>⚠️ If fever &gt; 3 days → see a doctor immediately.<br>👉 <a href='user_appointment.jsp' style='color:#019ADE;'>Book General Physician</a>";
+  if (msg.includes('headache') || msg.includes('migraine') || msg.includes('head pain'))
+    return "🧠 <strong>Headache Relief:</strong><br>• Rest in a quiet dark room<br>• Drink plenty of water<br>• Apply cold/warm compress<br>• Avoid screen time<br><br>If recurring → see a <strong>Neurologist</strong>.<br>👉 <a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('heart') || msg.includes('chest pain') || msg.includes('cardiac') || msg.includes('palpitation'))
+    return "❤️ <strong>Chest / Heart Issues:</strong><br>• Sudden severe chest pain → call <strong>112</strong><br>• Symptoms: pressure, left arm pain, breathlessness<br><br>👉 Book our <strong>Cardiologist</strong> now.<br><a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('skin') || msg.includes('rash') || msg.includes('acne') || msg.includes('itch'))
+    return "🩹 <strong>Skin Issues:</strong><br>• Keep area clean and dry<br>• Avoid scratching<br>• Use mild soap<br><br>👉 Consult our <strong>Dermatologist</strong>.<br><a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('eye') || msg.includes('vision') || msg.includes('blur'))
+    return "👁️ <strong>Eye Health:</strong><br>• 20-20-20 rule every 20 mins<br>• Avoid rubbing eyes<br>• Wear UV sunglasses<br><br>👉 Consult our <strong>Ophthalmologist</strong>.<br><a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('bone') || msg.includes('joint') || msg.includes('knee') || msg.includes('back pain') || msg.includes('arthritis'))
+    return "🦴 <strong>Bone / Joint Pain:</strong><br>• Ice first 48hrs then heat<br>• Gentle stretching<br>• Avoid strenuous activity<br><br>👉 Consult our <strong>Orthopedist</strong>.<br><a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('anxiet') || msg.includes('stress') || msg.includes('depress') || msg.includes('mental') || msg.includes('sad'))
+    return "🧘 <strong>Mental Wellness:</strong><br>• Deep breathing &amp; meditation<br>• Regular sleep schedule<br>• Stay connected with loved ones<br><br>💙 Talk to our <strong>Psychiatrist</strong>.<br><a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('cold') || msg.includes('cough') || msg.includes('flu') || msg.includes('sore throat'))
+    return "🤧 <strong>Cold &amp; Cough:</strong><br>• Warm water and honey<br>• Steam inhalation<br>• Avoid cold drinks<br>• Rest well<br><br>If &gt; 5 days → <a href='user_appointment.jsp' style='color:#019ADE;'>Book General Physician</a>";
+  if (msg.includes('stomach') || msg.includes('vomit') || msg.includes('diarrhea') || msg.includes('nausea'))
+    return "🫁 <strong>Stomach Issues:</strong><br>• Stay hydrated (ORS if diarrhea)<br>• Eat light — rice, banana, toast<br>• Avoid oily/spicy food<br><br>👉 <a href='user_appointment.jsp' style='color:#019ADE;'>Book General Physician</a>";
+  if (msg.includes('emergency') || msg.includes('urgent') || msg.includes('critical'))
+    return "🚨 <strong>EMERGENCY:</strong><br>• Call: <strong>112</strong><br>• Ambulance: <strong>108</strong><br>• Helpline: <strong>+91 98765 43210</strong><br><br><a href='user_appointment.jsp' style='color:#019ADE;'>Book priority appointment</a>";
+  if (msg.includes('doctor') || msg.includes('specialist'))
+    return "👨‍⚕️ <strong>Our Specialists:</strong><br>• Cardiologist (Heart)<br>• Neurologist (Brain)<br>• Dermatologist (Skin)<br>• Orthopedist (Bones)<br>• Ophthalmologist (Eyes)<br>• General Physician<br>• Psychiatrist<br><br>👉 <a href='user_appointment.jsp' style='color:#019ADE;'>Book Now</a>";
+  if (msg.includes('thank') || msg.includes('ok') || msg.includes('okay') || msg.includes('good'))
+    return "😊 You're welcome! Stay healthy and take care. 💙";
+  return "🤖 For personalised medical advice, please consult one of our qualified doctors.<br>👉 <a href='user_appointment.jsp' style='color:#019ADE;'>Book an appointment</a> or call <strong>+91 98765 43210</strong>";
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('chatInput').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') { e.preventDefault(); sendChat(); }
+  });
+});
+
 function filterDoctors(query) {
-  const items = document.querySelectorAll('.doctor-item');
-  const q = query.toLowerCase();
-  items.forEach(item => {
-    const spec = item.getAttribute('data-spec').toLowerCase();
-    const name = item.innerText.toLowerCase();
+  var items = document.querySelectorAll('.doctor-item');
+  var q = query.toLowerCase();
+  items.forEach(function(item) {
+    var spec = item.getAttribute('data-spec').toLowerCase();
+    var name = item.innerText.toLowerCase();
     item.style.display = (spec.includes(q) || name.includes(q) || q === '') ? '' : 'none';
   });
 }
